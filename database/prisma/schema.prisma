@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+enum NotificationType {
+  task_assigned
+  deadline_soon
+  meeting_scheduled
+  mention
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  email              String               @unique
+  passwordHash       String               @map("password_hash")
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  memberships        ProjectMember[]
+  taskAssignments    TaskAssignment[]
+  availability       Availability[]
+  meetingParticipants MeetingParticipant[]
+  messages           Message[]
+  messageReactions   MessageReaction[]
+  notifications      Notification[]
+  taskComments       TaskComment[]
+
+  @@map("users")
+}
+
+model Project {
+  id          Int                  @id @default(autoincrement())
+  name        String
+  code        String               @unique
+  deadline    DateTime?            @map("deadline")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+  members     ProjectMember[]
+  tasks       Task[]
+  meetings    Meeting[]
+  messages    Message[]
+  notifications Notification[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  userId    Int      @map("user_id")
+  projectId Int      @map("project_id")
+  role      String   @default("member")
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([userId, projectId])
+  @@map("project_members")
+}
+
+model Task {
+  id          Int              @id @default(autoincrement())
+  projectId   Int              @map("project_id")
+  title       String
+  description String           @db.Text
+  deadline    DateTime
+  status      TaskStatus       @default(todo)
+  priority    TaskPriority     @default(medium)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignments TaskAssignment[]
+  comments    TaskComment[]
+
+  @@map("tasks")
+}
+
+model TaskComment {
+  id        Int      @id @default(autoincrement())
+  taskId     Int      @map("task_id")
+  userId     Int      @map("user_id")
+  content    String   @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("task_comments")
+}
+
+model TaskAssignment {
+  taskId     Int      @map("task_id")
+  userId     Int      @map("user_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId])
+  @@map("task_assignments")
+}
+
+model Availability {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  dayOfWeek Int      @map("day_of_week")
+  startTime String   @map("start_time")
+  endTime   String   @map("end_time")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("availability")
+}
+
+model Meeting {
+  id               Int                  @id @default(autoincrement())
+  projectId        Int                  @map("project_id")
+  startDatetime    DateTime             @map("start_datetime")
+  endDatetime      DateTime             @map("end_datetime")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  project          Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  participants     MeetingParticipant[]
+
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  meetingId Int      @map("meeting_id")
+  userId    Int      @map("user_id")
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([meetingId, userId])
+  @@map("meeting_participants")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  projectId Int      @map("project_id")
+  userId    Int      @map("user_id")
+  content   String   @db.Text
+  timestamp DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactions MessageReaction[]
+
+  @@map("messages")
+}
+
+model MessageReaction {
+  id        Int      @id @default(autoincrement())
+  messageId Int      @map("message_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("message_reactions")
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int              @map("user_id")
+  projectId Int?             @map("project_id")
+  type      NotificationType
+  content   String
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project?         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
