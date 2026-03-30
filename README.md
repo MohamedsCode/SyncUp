@@ -1,6 +1,6 @@
 # SyncUp
 
-SyncUp is a desktop MVP for student team coordination. It combines project management, multi-user task assignment, a weekly availability planner, urgency-aware meeting recommendations, project chat, and notifications inside an Electron desktop shell.
+SyncUp is a desktop application for student team coordination. It combines project management, multi-user task assignment, a weekly availability planner, urgency-aware meeting recommendations, project chat, file sharing, and notifications inside an Electron desktop shell.
 
 ## Stack
 
