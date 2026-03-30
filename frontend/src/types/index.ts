@@ -60,6 +60,18 @@ export interface Message {
   reactedByMe: boolean;
 }
 
+export interface SharedFile {
+  id: number;
+  projectId: number;
+  userId: number;
+  originalName: string;
+  storedName: string;
+  mimeType: string;
+  sizeBytes: number;
+  createdAt: string;
+  user: User;
+}
+
 export interface Notification {
   id: number;
   userId: number;

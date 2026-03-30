@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getAvailability, saveAvailability } from "../controllers/availabilityController";
 import { login, me, register } from "../controllers/authController";
+import { downloadSharedFile, listSharedFiles, uploadSharedFile } from "../controllers/fileController";
 import { createMeeting, getRecommendations, listMeetings } from "../controllers/meetingController";
 import { createMessage, listMessages, toggleMessageReaction } from "../controllers/messageController";
 import { listNotifications, markNotificationRead } from "../controllers/notificationController";
@@ -32,6 +33,9 @@ router.patch("/projects/:projectId/tasks/:taskId", requireAuth, asyncHandler(upd
 router.delete("/projects/:projectId/tasks/:taskId", requireAuth, asyncHandler(deleteTask));
 router.get("/projects/:projectId/tasks/:taskId/comments", requireAuth, asyncHandler(listTaskComments));
 router.post("/projects/:projectId/tasks/:taskId/comments", requireAuth, asyncHandler(createTaskComment));
+router.get("/projects/:projectId/files", requireAuth, asyncHandler(listSharedFiles));
+router.post("/projects/:projectId/files", requireAuth, asyncHandler(uploadSharedFile));
+router.get("/projects/:projectId/files/:fileId/download", requireAuth, asyncHandler(downloadSharedFile));
 
 router.get("/availability", requireAuth, asyncHandler(getAvailability));
 router.put("/availability", requireAuth, asyncHandler(saveAvailability));

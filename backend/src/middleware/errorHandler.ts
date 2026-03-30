@@ -7,6 +7,15 @@ export const notFoundHandler = (_req: Request, _res: Response, next: NextFunctio
 };
 
 export const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "type" in error &&
+    (error as { type?: string }).type === "entity.too.large"
+  ) {
+    return res.status(413).json({ message: "Files must be 3 MB or smaller." });
+  }
+
   if (error instanceof ZodError) {
     return res.status(400).json({
       message: "Validation failed.",

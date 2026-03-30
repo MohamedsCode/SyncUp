@@ -7,6 +7,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { AuthPage } from "./pages/AuthPage";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
 import { ChatPage } from "./pages/ChatPage";
+import { FileSharingPage } from "./pages/FileSharingPage";
 import { MeetingsPage } from "./pages/MeetingsPage";
 import { SchedulerPage } from "./pages/SchedulerPage";
 import { TasksPage } from "./pages/TasksPage";
@@ -196,6 +197,7 @@ const App = () => {
       >
         <Route index element={<DashboardPage />} />
         <Route path="tasks" element={<TasksPage />} />
+        <Route path="files" element={<FileSharingPage />} />
         <Route path="chat" element={<ChatPage />} />
         <Route path="meetings" element={<MeetingsPage />} />
         <Route path="scheduler" element={<SchedulerPage />} />

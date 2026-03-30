@@ -56,6 +56,15 @@ export const SchedulerPage = () => {
     return <div className="glass-panel page-enter p-6 text-sm text-muted">Select a project to run the scheduler.</div>;
   }
 
+  const urgencyScore = recommendations ? Math.max(0, Math.min(1, recommendations.urgency.score)) : 0;
+  const urgencyPercent = Math.max(12, Math.round(urgencyScore * 100));
+  const urgencyBarClass =
+    recommendations?.urgency.level === "high"
+      ? "from-warning via-[#f97316] to-danger"
+      : recommendations?.urgency.level === "medium"
+        ? "from-warning to-[#f97316]"
+        : "from-[#22c55e] to-[#16a34a]";
+
   return (
     <div className="page-enter space-y-6">
       <section className="glass-panel overflow-hidden p-6 md:p-8">
@@ -89,7 +98,21 @@ export const SchedulerPage = () => {
             <div className="glass-subpanel mt-5 rounded-[24px] p-5">
               <p className="text-sm text-muted">Urgency level</p>
               <p className="mt-2 font-display text-4xl font-semibold capitalize text-frost">{recommendations.urgency.level}</p>
-              <p className="mt-3 text-sm text-electric">Score {recommendations.urgency.score.toFixed(3)}</p>
+              <div className="mt-4">
+                <div className="h-3 overflow-hidden rounded-full bg-white/8">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${urgencyBarClass} transition-all duration-300 ease-glass`}
+                    style={{ width: `${urgencyPercent}%` }}
+                  />
+                </div>
+                <p className="mt-3 text-sm text-muted">
+                  {recommendations.urgency.level === "high"
+                    ? "Long red bar means the team should meet soon."
+                    : recommendations.urgency.level === "medium"
+                      ? "Medium amber bar means some time pressure is building."
+                      : "Short green bar means the project still has breathing room."}
+                </p>
+              </div>
             </div>
             <p className="mt-4 text-sm leading-7 text-muted">
               High urgency favors the earliest viable times. Low urgency leans toward wider overlap windows to maximize

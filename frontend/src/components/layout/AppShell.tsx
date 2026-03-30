@@ -22,6 +22,7 @@ interface AppShellProps {
 const navItems = [
   { to: "/", label: "Dashboard", short: "DB" },
   { to: "/tasks", label: "Tasks", short: "TK" },
+  { to: "/files", label: "File Sharing", short: "FS" },
   { to: "/chat", label: "Chat", short: "CH" },
   { to: "/meetings", label: "Meetings", short: "MT" },
   { to: "/scheduler", label: "Scheduler", short: "SC" },

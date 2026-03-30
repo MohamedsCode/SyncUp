@@ -41,6 +41,7 @@ model User {
   messageReactions   MessageReaction[]
   notifications      Notification[]
   taskComments       TaskComment[]
+  uploadedFiles      SharedFile[]
 
   @@map("users")
 }
@@ -57,6 +58,7 @@ model Project {
   meetings    Meeting[]
   messages    Message[]
   notifications Notification[]
+  files       SharedFile[]
 
   @@map("projects")
 }
@@ -173,6 +175,21 @@ model MessageReaction {
 
   @@unique([messageId, userId])
   @@map("message_reactions")
+}
+
+model SharedFile {
+  id           Int      @id @default(autoincrement())
+  projectId    Int      @map("project_id")
+  userId       Int      @map("user_id")
+  originalName String   @map("original_name")
+  storedName   String   @map("stored_name")
+  mimeType     String   @map("mime_type")
+  sizeBytes    Int      @map("size_bytes")
+  createdAt    DateTime @default(now()) @map("created_at")
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("shared_files")
 }
 
 model Notification {

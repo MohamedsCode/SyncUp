@@ -161,7 +161,7 @@ export const KanbanBoard = ({
                         }}
                         className="ghost-button rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-frost"
                       >
-                        {isExpanded ? "Hide comments" : `Comments${typeof task.commentsCount === "number" ? ` (${task.commentsCount})` : ""}`}
+                        {isExpanded ? "Hide comments & suggestions" : `Comments & Suggestions${typeof task.commentsCount === "number" ? ` (${task.commentsCount})` : ""}`}
                       </button>
 
                       {isExpanded ? (

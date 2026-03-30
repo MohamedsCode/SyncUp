@@ -3,6 +3,7 @@ release/
 dist-electron/
 frontend/dist/
 backend/dist/
+uploads/
 
 .env
 .env.local

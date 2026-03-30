@@ -1,6 +1,6 @@
 const API_FALLBACK = "http://localhost:4000/api";
 
-const getApiBaseUrl = () => {
+export const getApiBaseUrl = () => {
   const desktopUrl = window.syncupDesktop?.getApiBaseUrl();
   const desktopUrlLegacy = window.syncuDesktop?.getApiBaseUrl?.();
   const resolved = desktopUrl ?? desktopUrlLegacy;
