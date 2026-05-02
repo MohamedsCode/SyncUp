@@ -62,7 +62,7 @@ export const WindowTitleBar = () => {
   return (
     <header className="window-titlebar">
       <div className="window-titlebar-brand">
-        <img src={syncupLogo} alt="" className="window-titlebar-logo" />
+        <img src={syncupLogo} alt="" width="500" height="500" decoding="async" className="window-titlebar-logo" />
         <span className="window-titlebar-name">SyncUp</span>
       </div>
 

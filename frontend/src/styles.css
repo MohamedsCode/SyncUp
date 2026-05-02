@@ -18,8 +18,8 @@
   --popover: #fffdfb;
   --primary: #8f83d8;
   --sidebar: #f8f2fb;
-  --font-mono: Fira Code, monospace;
-  --font-sans: Montserrat, sans-serif;
+  --font-mono: Consolas, Monaco, "Courier New", monospace;
+  --font-sans: "Segoe UI", Inter, Arial, sans-serif;
   --secondary: #f1ebf7;
   --background: #fbf7f3;
   --font-serif: Georgia, serif;

@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/client";
 import syncupLogo from "../assets/syncup-logo.png";
 import { useAuthStore } from "../store/authStore";
@@ -65,13 +65,29 @@ export const AuthPage = () => {
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl items-center justify-center">
         <div className="grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[minmax(18rem,24rem)_minmax(24rem,31rem)] lg:gap-16 xl:gap-20">
           <section className="hidden lg:flex lg:justify-center">
-            <img src={syncupLogo} alt="SyncUp logo" className="h-61 w-auto object-contain xl:h-70" />
+            <img
+              src={syncupLogo}
+              alt="SyncUp logo"
+              width="500"
+              height="500"
+              decoding="async"
+              fetchPriority="high"
+              className="h-61 w-auto object-contain xl:h-70"
+            />
           </section>
 
           <section className="glass-panel mx-auto w-full max-w-[31rem] rounded-[2rem] p-6 sm:p-8">
             <div className="text-center">
               <div className="flex justify-center pb-4 lg:hidden">
-                <img src={syncupLogo} alt="SyncUp logo" className="h-20 w-auto object-contain" />
+                <img
+                  src={syncupLogo}
+                  alt="SyncUp logo"
+                  width="500"
+                  height="500"
+                  decoding="async"
+                  fetchPriority="high"
+                  className="h-20 w-auto object-contain"
+                />
               </div>
               <p className="stat-label">Welcome back</p>
               <h2 className="panel-title mt-3 text-2xl font-bold leading-tight sm:text-[1.85rem]">
@@ -170,6 +186,13 @@ export const AuthPage = () => {
                   ? "Use the same email and password you registered with."
                   : "You can switch to Sign in at any time if you already have an account."}
               </p>
+
+              <Link
+                to="/features"
+                className="ghost-button inline-flex w-full justify-center rounded-2xl px-4 py-3 text-sm font-semibold"
+              >
+                Features
+              </Link>
             </form>
           </section>
         </div>

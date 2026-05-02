@@ -140,7 +140,14 @@ export const AppShell = ({
         <div className="sticky-glass fixed inset-x-4 top-4 z-30 rounded-3xl p-4 xl:hidden">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <img src={syncupLogo} alt="SyncUp logo" className="h-12 w-auto shrink-0 object-contain" />
+              <img
+                src={syncupLogo}
+                alt="SyncUp logo"
+                width="500"
+                height="500"
+                decoding="async"
+                className="h-12 w-auto shrink-0 object-contain"
+              />
               <div className="min-w-0">
                 <p className="panel-title truncate text-lg font-semibold">SyncUp</p>
                 <p className="truncate text-xs text-muted-foreground">
@@ -194,7 +201,14 @@ export const AppShell = ({
         <aside className="glass-panel hidden h-[calc(100vh-3rem)] w-[330px] shrink-0 overflow-hidden rounded-[2rem] xl:sticky xl:top-6 xl:flex xl:flex-col">
           <div className="px-6 pt-6">
             <div className="flex justify-center">
-              <img src={syncupLogo} alt="SyncUp logo" className="h-40 w-auto object-contain" />
+              <img
+                src={syncupLogo}
+                alt="SyncUp logo"
+                width="500"
+                height="500"
+                decoding="async"
+                className="h-40 w-auto object-contain"
+              />
             </div>
           </div>
 
