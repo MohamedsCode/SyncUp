@@ -6,9 +6,11 @@ interface AppState {
   projects: ProjectSummary[];
   selectedProjectId: number | null;
   notifications: Notification[];
+  themeMode: "dark" | "light";
   setProjects: (projects: ProjectSummary[]) => void;
   setSelectedProjectId: (projectId: number | null) => void;
   setNotifications: (notifications: Notification[]) => void;
+  setThemeMode: (themeMode: "dark" | "light") => void;
   reset: () => void;
 }
 
@@ -18,6 +20,7 @@ export const useAppStore = create<AppState>()(
       projects: [],
       selectedProjectId: null,
       notifications: [],
+      themeMode: "light",
       setProjects: (projects) =>
         set((state) => ({
           projects,
@@ -28,6 +31,7 @@ export const useAppStore = create<AppState>()(
         })),
       setSelectedProjectId: (selectedProjectId) => set({ selectedProjectId }),
       setNotifications: (notifications) => set({ notifications }),
+      setThemeMode: (themeMode) => set({ themeMode }),
       reset: () => set({ projects: [], selectedProjectId: null, notifications: [] })
     }),
     {

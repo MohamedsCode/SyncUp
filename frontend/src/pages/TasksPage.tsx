@@ -120,9 +120,7 @@ export const TasksPage = () => {
       }));
       setTasks((current) =>
         current.map((item) =>
-          item.id === task.id
-            ? { ...item, commentsCount: (item.commentsCount ?? 0) + 1 }
-            : item
+          item.id === task.id ? { ...item, commentsCount: (item.commentsCount ?? 0) + 1 } : item
         )
       );
     } catch (requestError) {
@@ -188,16 +186,16 @@ export const TasksPage = () => {
   };
 
   if (!selectedProjectId) {
-    return <div className="glass-panel page-enter p-6 text-sm text-muted">Select a project to manage tasks.</div>;
+    return <div className="glass-panel page-enter rounded-[2rem] p-6 text-sm text-muted-foreground">Select a project to manage tasks.</div>;
   }
 
   return (
     <div className="page-enter space-y-6">
-      <section className="glass-panel p-6">
+      <section className="glass-panel rounded-[2rem] p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="panel-title font-display text-3xl font-semibold text-frost">Task Board</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="panel-title text-3xl font-semibold text-foreground">Task Board</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Assign work, track urgency, and drag tasks across the board as progress changes.
             </p>
           </div>
@@ -222,9 +220,7 @@ export const TasksPage = () => {
           </div>
           <select
             value={form.priority}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, priority: event.target.value as Task["priority"] }))
-            }
+            onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value as Task["priority"] }))}
             className="soft-input rounded-2xl px-4 py-3"
           >
             <option value="low">Low priority</option>
@@ -247,7 +243,7 @@ export const TasksPage = () => {
             required
           />
           <div className="glass-subpanel rounded-[24px] p-4 xl:col-span-2">
-            <p className="text-sm font-semibold text-frost/90">Assign teammates</p>
+            <p className="text-sm font-semibold text-foreground">Assign teammates</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {members.map((member) => {
                 const checked = form.assigneeIds.includes(member.id);
@@ -256,8 +252,8 @@ export const TasksPage = () => {
                     key={member.id}
                     className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                       checked
-                        ? "bg-gradient-to-r from-electric to-violet text-white shadow-glow"
-                        : "border border-white/10 bg-white/5 text-muted"
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-border/70 bg-card/70 text-muted-foreground"
                     }`}
                   >
                     <input

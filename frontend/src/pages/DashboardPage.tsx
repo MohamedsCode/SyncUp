@@ -46,11 +46,12 @@ export const DashboardPage = () => {
 
   if (!selectedProjectId) {
     return (
-      <div className="glass-panel page-enter p-8">
-        <h1 className="panel-title font-display text-3xl font-semibold text-frost">Create or join a project to get started</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
-          The dashboard comes alive once your team has a workspace. Use the sidebar to create a new project or join
-          with a unique code.
+      <div className="glass-panel rounded-[2rem] p-8">
+        <span className="page-kicker">Workspace Required</span>
+        <h1 className="panel-title mt-6 text-3xl font-bold">Create or join a project to unlock your dashboard.</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
+          Once your team has a workspace, SyncUp will surface deadlines, meetings, member activity, and the clearest
+          next actions from a single view.
         </p>
       </div>
     );
@@ -61,7 +62,11 @@ export const DashboardPage = () => {
   }
 
   if (error) {
-    return <div className="glass-panel page-enter p-6 text-sm text-danger">{error}</div>;
+    return (
+      <div className="glass-panel rounded-[2rem] p-6 text-sm font-medium text-danger">
+        Something blocked the dashboard from loading: {error}
+      </div>
+    );
   }
 
   if (!dashboard) {
@@ -71,99 +76,135 @@ export const DashboardPage = () => {
   const completionRate = Math.max(0, Math.min(100, dashboard.stats.completionRate));
 
   return (
-    <div className="page-enter space-y-6">
-      <section className="glass-panel overflow-hidden p-6 md:p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <span className="inline-flex rounded-full border border-electric/20 bg-electric/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-electric">
-              Project Dashboard
-            </span>
-            <h1 className="panel-title mt-4 font-display text-4xl font-semibold tracking-tight text-frost">{dashboard.project.name}</h1>
-            <p className="mt-3 text-sm text-muted">
-              Team code <span className="font-semibold text-frost">{dashboard.project.code}</span> with{" "}
-              {dashboard.stats.memberCount} members collaborating in one place.
+    <div className="space-y-6">
+      <section className="glass-panel overflow-hidden rounded-[2rem] p-6 md:p-8">
+        <div className="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-3xl">
+            <span className="page-kicker">Project Overview</span>
+            <h1 className="panel-title mt-5 text-balance text-4xl font-bold tracking-tight md:text-[2.8rem]">
+              {dashboard.project.name}
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+              Team code <span className="font-mono text-foreground">{dashboard.project.code}</span> with{" "}
+              {dashboard.stats.memberCount} members.
             </p>
           </div>
-          <div className="glass-subpanel min-w-[240px] rounded-[24px] px-5 py-4 text-frost">
-            <p className="text-sm text-muted">Completion</p>
-            <p className="panel-title mt-2 font-display text-4xl font-semibold">{completionRate}%</p>
-            <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/8">
+
+          <div className="glass-subpanel min-w-[18rem] rounded-[1.75rem] p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="stat-label">Completion</p>
+                <p className="panel-title mt-3 text-4xl font-bold">{completionRate}%</p>
+              </div>
+              <span className="status-pill status-pill-primary">On track</span>
+            </div>
+            <div className="mt-5 h-3 overflow-hidden rounded-full bg-muted/80">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-electric via-cyan to-violet shadow-glow transition-all duration-500 ease-glass"
+                className="h-full rounded-full bg-primary transition-all duration-300 ease-glass"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
-            <p className="mt-3 text-xs uppercase tracking-[0.22em] text-muted">Completed task progress</p>
+            <p className="mt-3 text-sm text-muted-foreground">Completed task progress across the current workspace.</p>
           </div>
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {[
-            ["Tasks", dashboard.stats.totalTasks],
-            ["Due Soon", dashboard.stats.dueSoonCount],
-            ["Overdue", dashboard.stats.overdueCount],
-            ["Meetings", dashboard.stats.meetingCount]
-          ].map(([label, value], index) => (
-            <div key={label} className="glass-subpanel rounded-[24px] p-5 transition-transform duration-150 ease-glass hover:-translate-y-0.5">
-              <p className="text-sm text-muted">{label}</p>
-              <p className={`mt-2 font-display text-3xl font-semibold ${index === 1 ? "text-warning" : index === 2 ? "text-danger" : "text-frost"}`}>{value}</p>
-            </div>
-          ))}
+          <div className="metric-card">
+            <p className="stat-label">Tasks</p>
+            <p className="mt-3 text-3xl font-bold text-foreground">{dashboard.stats.totalTasks}</p>
+          </div>
+          <div className="metric-card">
+            <p className="stat-label">Due Soon</p>
+            <p className="mt-3 text-3xl font-bold text-warning">{dashboard.stats.dueSoonCount}</p>
+          </div>
+          <div className="metric-card">
+            <p className="stat-label">Overdue</p>
+            <p className="mt-3 text-3xl font-bold text-danger">{dashboard.stats.overdueCount}</p>
+          </div>
+          <div className="metric-card">
+            <p className="stat-label">Meetings</p>
+            <p className="mt-3 text-3xl font-bold text-foreground">{dashboard.stats.meetingCount}</p>
+          </div>
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="glass-panel p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="panel-title font-display text-2xl font-semibold text-frost">Focus Queue</h2>
-            <span className="text-sm text-muted">Tasks nearest to action</span>
+      <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="glass-panel rounded-[2rem] p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="stat-label">Focus Queue</p>
+              <h2 className="panel-title mt-3 text-2xl font-bold">What needs attention next</h2>
+            </div>
+            <span className="status-pill status-pill-accent">Nearest actions</span>
           </div>
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <div className="glass-subpanel rounded-[24px] border border-danger/20 p-4">
-              <p className="text-sm font-semibold text-danger">Overdue</p>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <article className="glass-subpanel rounded-[1.75rem] p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold text-danger">Overdue</h3>
+                <span className="status-pill status-pill-danger">{dashboard.overdueTasks.length}</span>
+              </div>
               <div className="mt-4 space-y-3">
                 {dashboard.overdueTasks.slice(0, 4).map((task) => (
-                  <div key={task.id} className="rounded-2xl border border-danger/15 bg-danger/10 p-3">
-                    <p className="font-semibold text-frost">{task.title}</p>
-                    <p className="mt-1 text-xs text-muted">{formatDateTime(task.deadline)}</p>
+                  <div key={task.id} className="rounded-3xl border border-danger/30 bg-danger/10 p-4">
+                    <p className="text-sm font-semibold text-foreground">{task.title}</p>
+                    <p className="mt-2 text-xs leading-6 text-muted-foreground">{formatDateTime(task.deadline)}</p>
                   </div>
                 ))}
-                {dashboard.overdueTasks.length === 0 ? <p className="text-sm text-muted">No overdue tasks.</p> : null}
+                {dashboard.overdueTasks.length === 0 ? (
+                  <div className="empty-panel text-sm">No overdue tasks. The team is clear here.</div>
+                ) : null}
               </div>
-            </div>
+            </article>
 
-            <div className="glass-subpanel rounded-[24px] border border-warning/20 p-4">
-              <p className="text-sm font-semibold text-warning">Due in 24 hours</p>
+            <article className="glass-subpanel rounded-[1.75rem] p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold text-warning">Due in 24 hours</h3>
+                <span className="status-pill status-pill-warning">{dashboard.dueSoonTasks.length}</span>
+              </div>
               <div className="mt-4 space-y-3">
                 {dashboard.dueSoonTasks.slice(0, 4).map((task) => (
-                  <div key={task.id} className="rounded-2xl border border-warning/15 bg-warning/10 p-3">
-                    <p className="font-semibold text-frost">{task.title}</p>
-                    <p className="mt-1 text-xs text-muted">{formatDateTime(task.deadline)}</p>
+                  <div key={task.id} className="rounded-3xl border border-warning/30 bg-warning/10 p-4">
+                    <p className="text-sm font-semibold text-foreground">{task.title}</p>
+                    <p className="mt-2 text-xs leading-6 text-muted-foreground">{formatDateTime(task.deadline)}</p>
                   </div>
                 ))}
-                {dashboard.dueSoonTasks.length === 0 ? <p className="text-sm text-muted">Nothing urgent right now.</p> : null}
+                {dashboard.dueSoonTasks.length === 0 ? (
+                  <div className="empty-panel text-sm">Nothing urgent in the next 24 hours.</div>
+                ) : null}
               </div>
-            </div>
+            </article>
           </div>
         </div>
 
-        <div className="glass-panel p-6">
-          <h2 className="panel-title font-display text-2xl font-semibold text-frost">Team Pulse</h2>
+        <div className="glass-panel rounded-[2rem] p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="stat-label">Team Pulse</p>
+              <h2 className="panel-title mt-3 text-2xl font-bold">Live collaboration snapshot</h2>
+            </div>
+            <span className="status-pill status-pill-primary">{dashboard.members.length} members</span>
+          </div>
+
           <div className="mt-5 flex flex-wrap gap-2">
             {dashboard.members.map((member) => (
-              <span key={member.id} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-frost/85">
+              <span key={member.id} className="status-pill status-pill-primary normal-case tracking-normal">
                 {member.name}
               </span>
             ))}
           </div>
+
           <div className="mt-6 space-y-3">
             {dashboard.activity.map((item, index) => (
-              <div key={`${item.type}-${index}`} className="glass-subpanel rounded-[20px] p-4 transition-transform duration-150 ease-glass hover:-translate-y-0.5">
-                <p className="text-sm font-semibold capitalize text-frost">{item.type}</p>
-                <p className="mt-2 text-sm text-muted">{item.text}</p>
-                <p className="mt-2 text-xs text-muted/80">{formatDateTime(item.timestamp)}</p>
+              <div key={`${item.type}-${index}`} className="glass-subpanel rounded-[1.5rem] p-4">
+                <p className="stat-label capitalize">{item.type}</p>
+                <p className="mt-3 text-sm leading-7 text-foreground">{item.text}</p>
+                <p className="mt-2 text-xs text-muted-foreground">{formatDateTime(item.timestamp)}</p>
               </div>
             ))}
+            {dashboard.activity.length === 0 ? (
+              <div className="empty-panel text-sm">Activity will appear here as teammates create momentum.</div>
+            ) : null}
           </div>
         </div>
       </section>

@@ -6,7 +6,8 @@ import { LoadingState } from "../components/LoadingState";
 import { SharedFile } from "../types";
 import { formatDateTime } from "../utils/format";
 
-const acceptedFileTypes = ".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
+const acceptedFileTypes =
+  ".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const maxFileSizeBytes = 3 * 1024 * 1024;
 
 const formatFileSize = (sizeBytes: number) => {
@@ -135,7 +136,7 @@ export const FileSharingPage = () => {
   };
 
   if (!selectedProjectId) {
-    return <div className="glass-panel page-enter p-6 text-sm text-muted">Select a project to share files.</div>;
+    return <div className="glass-panel page-enter p-6 text-sm text-muted-foreground">Select a project to share files.</div>;
   }
 
   if (loading && files.length === 0) {
@@ -147,8 +148,8 @@ export const FileSharingPage = () => {
       <section className="glass-panel p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="panel-title font-display text-3xl font-semibold text-frost">File Sharing</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="panel-title text-3xl font-semibold text-foreground">File Sharing</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Upload PDFs, Word documents, and PowerPoint files up to 3 MB each for your team to access in one place.
             </p>
           </div>
@@ -170,33 +171,33 @@ export const FileSharingPage = () => {
 
       <section className="glass-panel p-6">
         <div className="flex items-center justify-between">
-          <h2 className="panel-title font-display text-2xl font-semibold text-frost">Shared files</h2>
-          <span className="text-sm text-muted">{files.length} items</span>
+          <h2 className="panel-title text-2xl font-semibold text-foreground">Shared files</h2>
+          <span className="text-sm text-muted-foreground">{files.length} items</span>
         </div>
 
         <div className="mt-5 space-y-3">
           {files.map((file) => (
             <article key={file.id} className="glass-subpanel flex flex-col gap-4 rounded-[24px] p-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <p className="text-base font-semibold text-frost">{file.originalName}</p>
-                <p className="mt-1 text-sm text-muted">
+                <p className="text-base font-semibold text-foreground">{file.originalName}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
                   Uploaded by {file.user.name} on {formatDateTime(file.createdAt)}
                 </p>
-                <p className="mt-2 text-xs uppercase tracking-[0.18em] text-electric">
-                  {file.mimeType} • {formatFileSize(file.sizeBytes)}
+                <p className="mt-2 text-xs uppercase tracking-[0.18em] text-accent">
+                  {file.mimeType} - {formatFileSize(file.sizeBytes)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => void downloadFile(file)}
                 disabled={downloadingFileId === file.id}
-                className="ghost-button rounded-2xl px-4 py-3 text-sm font-semibold text-frost disabled:opacity-60"
+                className="ghost-button rounded-2xl px-4 py-3 text-sm font-semibold text-foreground disabled:opacity-60"
               >
                 {downloadingFileId === file.id ? "Downloading..." : "Download"}
               </button>
             </article>
           ))}
-          {files.length === 0 ? <p className="text-sm text-muted">No shared files yet. Upload the first document for this project.</p> : null}
+          {files.length === 0 ? <p className="text-sm text-muted-foreground">No shared files yet. Upload the first document for this project.</p> : null}
         </div>
       </section>
     </div>

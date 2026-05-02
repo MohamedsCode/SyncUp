@@ -31,27 +31,30 @@ export const ChatPage = () => {
     startTransition(() => setMessages(nextMessages));
   }, []);
 
-  const loadMessages = useCallback(async (showLoading = false) => {
-    if (!selectedProjectId) {
-      return;
-    }
-
-    if (showLoading) {
-      setLoading(true);
-    }
-
-    try {
-      const data = await apiRequest<{ messages: Message[] }>(`/projects/${selectedProjectId}/messages`);
-      syncMessages(data.messages);
-      setError(null);
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to load chat.");
-    } finally {
-      if (showLoading) {
-        setLoading(false);
+  const loadMessages = useCallback(
+    async (showLoading = false) => {
+      if (!selectedProjectId) {
+        return;
       }
-    }
-  }, [selectedProjectId, syncMessages]);
+
+      if (showLoading) {
+        setLoading(true);
+      }
+
+      try {
+        const data = await apiRequest<{ messages: Message[] }>(`/projects/${selectedProjectId}/messages`);
+        syncMessages(data.messages);
+        setError(null);
+      } catch (requestError) {
+        setError(requestError instanceof Error ? requestError.message : "Unable to load chat.");
+      } finally {
+        if (showLoading) {
+          setLoading(false);
+        }
+      }
+    },
+    [selectedProjectId, syncMessages]
+  );
 
   useEffect(() => {
     messagesSignatureRef.current = "";
@@ -111,14 +114,15 @@ export const ChatPage = () => {
 
     setReactingMessageId(message.id);
     try {
-      const data = await apiRequest<{ message: Message }>(`/projects/${selectedProjectId}/messages/${message.id}/reactions/toggle`, {
-        method: "POST"
-      });
+      const data = await apiRequest<{ message: Message }>(
+        `/projects/${selectedProjectId}/messages/${message.id}/reactions/toggle`,
+        {
+          method: "POST"
+        }
+      );
       messagesSignatureRef.current = "";
       startTransition(() =>
-        setMessages((current) =>
-          current.map((item) => (item.id === data.message.id ? data.message : item))
-        )
+        setMessages((current) => current.map((item) => (item.id === data.message.id ? data.message : item)))
       );
       setError(null);
     } catch (requestError) {
@@ -129,34 +133,34 @@ export const ChatPage = () => {
   };
 
   if (!selectedProjectId) {
-    return <div className="glass-panel page-enter p-6 text-sm text-muted">Choose a project to open team chat.</div>;
+    return <div className="glass-panel page-enter p-6 text-sm text-muted-foreground">Choose a project to open team chat.</div>;
   }
 
   return (
     <div className="glass-panel page-enter flex min-h-[78vh] flex-col overflow-hidden">
-      <div className="border-b border-white/10 px-6 py-5">
-        <h1 className="panel-title font-display text-3xl font-semibold text-frost">Project Chat</h1>
-        <p className="mt-2 text-sm text-muted">Use @mentions to trigger a notification for teammates.</p>
+      <div className="border-b border-border/70 px-6 py-5">
+        <h1 className="panel-title text-3xl font-semibold text-foreground">Project Chat</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Use @mentions to trigger a notification for teammates.</p>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,_rgba(15,23,42,0.28)_0%,_rgba(2,6,23,0.54)_100%)] p-6">
+      <div className="flex-1 space-y-4 overflow-y-auto bg-muted/35 p-6">
         {loading && messages.length === 0 ? <LoadingState label="Loading messages..." /> : null}
         {groupedMessages.map((message) => (
           <div key={message.id} className={`flex ${message.own ? "justify-end" : "justify-start"}`}>
             <div
               onDoubleClick={() => void toggleReaction(message)}
-              className={`max-w-[70%] rounded-[24px] px-4 py-3 ${
-                message.own
-                  ? "border border-electric/25 bg-gradient-to-br from-electric/30 to-violet/24 text-white shadow-glow"
-                  : "glass-subpanel text-frost"
+                className={`max-w-[70%] rounded-[24px] px-4 py-3 ${
+                  message.own
+                  ? "border border-primary/25 bg-primary/12 text-foreground"
+                  : "glass-subpanel text-foreground"
               } ${reactingMessageId === message.id ? "opacity-80" : ""}`}
               title="Double-click to react with thumbs up"
             >
-              <p className={`text-xs font-semibold ${message.own ? "text-white/70" : "text-muted"}`}>
+              <p className={`text-xs font-semibold ${message.own ? "text-muted-foreground" : "text-muted-foreground"}`}>
                 {message.user.name}
               </p>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-7">{message.content}</p>
-              <p className={`mt-2 text-[11px] ${message.own ? "text-white/60" : "text-muted/80"}`}>
+              <p className={`mt-2 text-[11px] ${message.own ? "text-muted-foreground" : "text-muted-foreground"}`}>
                 {formatDateTime(message.timestamp)}
               </p>
               {message.reactionCount > 0 || message.reactedByMe ? (
@@ -164,8 +168,8 @@ export const ChatPage = () => {
                   <span
                     className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
                       message.reactedByMe
-                        ? "border-electric/35 bg-electric/15 text-white"
-                        : "border-white/10 bg-white/5 text-frost/85"
+                        ? "border-accent/35 bg-accent/15 text-foreground"
+                        : "border-border/70 bg-card/70 text-foreground"
                     }`}
                   >
                     <span aria-hidden="true">👍</span>
@@ -176,10 +180,10 @@ export const ChatPage = () => {
             </div>
           </div>
         ))}
-        {!loading && messages.length === 0 ? <p className="text-sm text-muted">No messages yet. Start the conversation.</p> : null}
+        {!loading && messages.length === 0 ? <p className="text-sm text-muted-foreground">No messages yet. Start the conversation.</p> : null}
       </div>
 
-      <form onSubmit={sendMessage} className="border-t border-white/10 bg-white/5 p-5">
+      <form onSubmit={sendMessage} className="border-t border-border/70 bg-card/55 p-5">
         {error ? <p className="mb-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">{error}</p> : null}
         <div className="flex gap-3">
           <textarea

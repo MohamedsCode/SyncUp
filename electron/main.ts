@@ -1,27 +1,87 @@
 import path from "path";
-import { BrowserWindow, app, dialog } from "electron";
+import net from "net";
+import { BrowserWindow, app, dialog, ipcMain } from "electron";
 
 let mainWindow: BrowserWindow | null = null;
 let stopBackendServer: (() => Promise<void>) | null = null;
+
+const canListenOnPort = (port: number) =>
+  new Promise<boolean>((resolve) => {
+    const probe = net.createServer();
+
+    probe.once("error", () => {
+      resolve(false);
+    });
+
+    probe.once("listening", () => {
+      probe.close(() => resolve(true));
+    });
+
+    probe.listen(port);
+  });
+
+const findAvailablePort = async (preferredPort: number) => {
+  for (let port = preferredPort; port < preferredPort + 50; port += 1) {
+    if (await canListenOnPort(port)) {
+      return port;
+    }
+  }
+
+  return new Promise<number>((resolve, reject) => {
+    const probe = net.createServer();
+
+    probe.once("error", reject);
+    probe.once("listening", () => {
+      const address = probe.address();
+      const port = typeof address === "object" && address ? address.port : preferredPort;
+      probe.close(() => resolve(port));
+    });
+
+    probe.listen(0);
+  });
+};
 
 const createMainWindow = async () => {
   const preloadPath = app.isPackaged
     ? path.join(__dirname, "preload.js")
     : path.join(__dirname, "preload.dev.cjs");
-  process.env.SYNCUP_API_URL = process.env.SYNCUP_API_URL ?? `http://localhost:${process.env.PORT ?? "4000"}`;
+  if (app.isPackaged) {
+    const apiPort = await findAvailablePort(Number(process.env.PORT ?? "4000"));
+    process.env.PORT = String(apiPort);
+    process.env.SYNCUP_API_URL = `http://localhost:${apiPort}`;
+  } else {
+    process.env.SYNCUP_API_URL = process.env.SYNCUP_API_URL ?? `http://localhost:${process.env.PORT ?? "4000"}`;
+  }
 
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 920,
     minWidth: 1180,
     minHeight: 760,
-    backgroundColor: "#f5efe6",
+    backgroundColor: "#00000000",
+    frame: false,
+    transparent: true,
+    resizable: true,
+    hasShadow: true,
+    autoHideMenuBar: true,
     title: "SyncUp",
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false
     }
+  });
+
+  mainWindow.on("maximize", () => {
+    mainWindow?.webContents.send("window:maximized-change", true);
+  });
+
+  mainWindow.on("unmaximize", () => {
+    mainWindow?.webContents.send("window:maximized-change", false);
+  });
+
+  mainWindow.on("closed", () => {
+    mainWindow = null;
   });
 
   try {
@@ -61,6 +121,34 @@ const createMainWindow = async () => {
     );
   }
 };
+
+const getSenderWindow = (event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent) =>
+  BrowserWindow.fromWebContents(event.sender);
+
+ipcMain.handle("window:minimize", (event) => {
+  getSenderWindow(event)?.minimize();
+});
+
+ipcMain.handle("window:toggle-maximize", (event) => {
+  const window = getSenderWindow(event);
+  if (!window) {
+    return false;
+  }
+
+  if (window.isMaximized()) {
+    window.unmaximize();
+  } else {
+    window.maximize();
+  }
+
+  return window.isMaximized();
+});
+
+ipcMain.handle("window:close", (event) => {
+  getSenderWindow(event)?.close();
+});
+
+ipcMain.handle("window:is-maximized", (event) => getSenderWindow(event)?.isMaximized() ?? false);
 
 app.whenReady().then(async () => {
   await createMainWindow();

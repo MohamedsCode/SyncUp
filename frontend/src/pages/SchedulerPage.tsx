@@ -53,28 +53,26 @@ export const SchedulerPage = () => {
   };
 
   if (!selectedProjectId) {
-    return <div className="glass-panel page-enter p-6 text-sm text-muted">Select a project to run the scheduler.</div>;
+    return <div className="glass-panel page-enter p-6 text-sm text-muted-foreground">Select a project to run the scheduler.</div>;
   }
 
   const urgencyScore = recommendations ? Math.max(0, Math.min(1, recommendations.urgency.score)) : 0;
   const urgencyPercent = Math.max(12, Math.round(urgencyScore * 100));
   const urgencyBarClass =
     recommendations?.urgency.level === "high"
-      ? "from-warning via-[#f97316] to-danger"
+      ? "bg-danger"
       : recommendations?.urgency.level === "medium"
-        ? "from-warning to-[#f97316]"
-        : "from-[#22c55e] to-[#16a34a]";
+        ? "bg-warning"
+        : "bg-success";
 
   return (
     <div className="page-enter space-y-6">
       <section className="glass-panel overflow-hidden p-6 md:p-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <span className="inline-flex rounded-full border border-electric/20 bg-electric/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-electric">
-              Urgency-Aware Scheduler
-            </span>
-            <h1 className="panel-title mt-4 font-display text-4xl font-semibold tracking-tight text-frost">Find common time with context.</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted">
+            <span className="page-kicker">Urgency-Aware Scheduler</span>
+            <h1 className="panel-title mt-4 text-4xl font-semibold tracking-tight text-foreground">Find common time with context.</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
               SyncUp looks at overlapping weekly availability, checks deadline pressure, and recommends the best meeting
               windows for the project.
             </p>
@@ -94,18 +92,18 @@ export const SchedulerPage = () => {
       {recommendations ? (
         <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
           <div className="glass-panel p-6">
-            <h2 className="panel-title font-display text-2xl font-semibold text-frost">Urgency Snapshot</h2>
+            <h2 className="panel-title text-2xl font-semibold text-foreground">Urgency Snapshot</h2>
             <div className="glass-subpanel mt-5 rounded-[24px] p-5">
-              <p className="text-sm text-muted">Urgency level</p>
-              <p className="mt-2 font-display text-4xl font-semibold capitalize text-frost">{recommendations.urgency.level}</p>
+              <p className="text-sm text-muted-foreground">Urgency level</p>
+              <p className="mt-2 text-4xl font-semibold capitalize text-foreground">{recommendations.urgency.level}</p>
               <div className="mt-4">
-                <div className="h-3 overflow-hidden rounded-full bg-white/8">
+                <div className="h-3 overflow-hidden rounded-full bg-muted/80">
                   <div
-                    className={`h-full rounded-full bg-gradient-to-r ${urgencyBarClass} transition-all duration-300 ease-glass`}
+                    className={`h-full rounded-full ${urgencyBarClass} transition-all duration-300 ease-glass`}
                     style={{ width: `${urgencyPercent}%` }}
                   />
                 </div>
-                <p className="mt-3 text-sm text-muted">
+                <p className="mt-3 text-sm text-muted-foreground">
                   {recommendations.urgency.level === "high"
                     ? "Long red bar means the team should meet soon."
                     : recommendations.urgency.level === "medium"
@@ -114,7 +112,7 @@ export const SchedulerPage = () => {
                 </p>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-7 text-muted">
+            <p className="mt-4 text-sm leading-7 text-muted-foreground">
               High urgency favors the earliest viable times. Low urgency leans toward wider overlap windows to maximize
               convenience.
             </p>
@@ -122,16 +120,16 @@ export const SchedulerPage = () => {
 
           <div className="space-y-4">
             {recommendations.slots.map((slot) => (
-              <article key={slot.startDateTime} className={`glass-panel p-6 ${slot.label ? "shadow-violet" : ""}`}>
+              <article key={slot.startDateTime} className={`glass-panel p-6 ${slot.label ? "border-primary/30" : ""}`}>
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-electric">{dayLabel(slot.dayOfWeek)}</p>
-                    <h3 className="panel-title mt-2 font-display text-2xl font-semibold text-frost">{formatDateTime(slot.startDateTime)}</h3>
-                    <p className="mt-2 text-sm text-muted">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{dayLabel(slot.dayOfWeek)}</p>
+                    <h3 className="panel-title mt-2 text-2xl font-semibold text-foreground">{formatDateTime(slot.startDateTime)}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
                       1-hour meeting block inside a {slot.overlapMinutes}-minute shared overlap window.
                     </p>
                     {slot.label ? (
-                      <p className="mt-3 inline-flex rounded-full bg-gradient-to-r from-electric to-violet px-4 py-2 text-sm font-semibold text-white shadow-glow">
+                      <p className="mt-3 inline-flex rounded-full border border-primary/25 bg-primary/12 px-4 py-2 text-sm font-semibold text-primary">
                         {slot.label}
                       </p>
                     ) : null}
@@ -147,14 +145,14 @@ export const SchedulerPage = () => {
               </article>
             ))}
             {recommendations.slots.length === 0 ? (
-              <div className="glass-panel p-6 text-sm text-muted">
+              <div className="glass-panel p-6 text-sm text-muted-foreground">
                 No 1-hour overlap was found across the whole team. Ask teammates to add more weekly availability.
               </div>
             ) : null}
           </div>
         </section>
       ) : (
-        <div className="glass-panel p-6 text-sm text-muted">
+        <div className="glass-panel p-6 text-sm text-muted-foreground">
           Run the scheduler to generate the top 3 recommended slots for your current project.
         </div>
       )}

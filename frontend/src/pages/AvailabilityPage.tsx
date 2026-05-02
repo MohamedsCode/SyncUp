@@ -90,8 +90,8 @@ export const AvailabilityPage = () => {
       <section className="glass-panel p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="panel-title font-display text-3xl font-semibold text-frost">Weekly Availability</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="panel-title text-3xl font-semibold text-foreground">Weekly Availability</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Add as many time windows as you want per day. SyncUp uses these slots to compute shared meeting overlap.
             </p>
           </div>
@@ -110,11 +110,11 @@ export const AvailabilityPage = () => {
         {groupedSlots.map(({ day, slots: daySlots }) => (
           <div key={day} className="glass-panel p-5">
             <div className="flex items-center justify-between">
-              <h2 className="panel-title font-display text-2xl font-semibold text-frost">{dayLabel(day)}</h2>
+              <h2 className="panel-title text-2xl font-semibold text-foreground">{dayLabel(day)}</h2>
               <button
                 type="button"
                 onClick={() => addSlot(day)}
-                className="ghost-button rounded-full px-4 py-2 text-sm font-semibold text-frost"
+                className="ghost-button rounded-full px-4 py-2 text-sm font-semibold text-foreground"
               >
                 Add slot
               </button>
@@ -143,7 +143,7 @@ export const AvailabilityPage = () => {
                   </button>
                 </div>
               ))}
-              {daySlots.length === 0 ? <p className="text-sm text-muted">No slots added for {dayLabel(day)}.</p> : null}
+              {daySlots.length === 0 ? <p className="text-sm text-muted-foreground">No slots added for {dayLabel(day)}.</p> : null}
             </div>
           </div>
         ))}

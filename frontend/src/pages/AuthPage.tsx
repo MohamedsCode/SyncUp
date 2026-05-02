@@ -7,6 +7,21 @@ import { User } from "../types";
 
 type Mode = "login" | "register";
 
+const productHighlights = [
+  {
+    title: "Clear task ownership",
+    text: "Keep deadlines, assignees, and task comments aligned in one calm workflow."
+  },
+  {
+    title: "Smarter meeting planning",
+    text: "Turn availability into practical meeting recommendations with urgency built in."
+  },
+  {
+    title: "Shared team context",
+    text: "Chat, files, notifications, and meeting history stay organized in one workspace."
+  }
+];
+
 export const AuthPage = () => {
   const navigate = useNavigate();
   const setSession = useAuthStore((state) => state.setSession);
@@ -46,98 +61,98 @@ export const AuthPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 py-8 text-frost">
-      <div className="relative z-10 mx-auto max-w-6xl">
-        <div className="flex justify-center pb-8">
-          <img src={syncupLogo} alt="SyncUp logo" className="h-28 w-auto object-contain drop-shadow-[0_0_30px_rgba(139,92,246,0.35)] md:h-36" />
-        </div>
-
-        <div className="grid min-h-[calc(100vh-12rem)] items-center gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="glass-panel page-enter overflow-hidden p-8 md:p-10">
-            <div className="max-w-xl">
-              <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-electric">
-                Intelligent Team Coordination
-              </span>
-              <h1 className="panel-title mt-6 font-display text-5xl font-semibold tracking-tight text-frost">
-                SyncUp turns busy student teams into one clear workflow.
-              </h1>
-              <p className="mt-5 text-lg leading-8 text-muted">
-                Plan tasks, align availability, surface urgency, and move from scattered messages to one premium
-                workspace with momentum built in.
-              </p>
-
-              <div className="mt-10 grid gap-4 md:grid-cols-3">
-                {[
-                  ["Task Flow", "Kanban planning with urgency glow, assignees, and clean ownership."],
-                  ["Meeting Intel", "Smart slot recommendations ranked by shared availability and pressure."],
-                  ["Team Signal", "Project chat, notifications, and one view of what matters now."]
-                ].map(([title, text]) => (
-                  <div key={title} className="glass-subpanel rounded-[24px] p-4 transition-transform duration-150 ease-glass hover:-translate-y-0.5">
-                    <p className="font-display text-lg font-semibold text-frost">{title}</p>
-                    <p className="mt-2 text-sm leading-6 text-muted">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <div className="app-shell-background relative min-h-screen overflow-hidden px-4 py-6 text-foreground sm:px-6 md:px-8">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl items-center justify-center">
+        <div className="grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[minmax(18rem,24rem)_minmax(24rem,31rem)] lg:gap-16 xl:gap-20">
+          <section className="hidden lg:flex lg:justify-center">
+            <img src={syncupLogo} alt="SyncUp logo" className="h-61 w-auto object-contain xl:h-70" />
           </section>
 
-          <section className="glass-panel page-enter p-8 md:p-10">
-            <div className="glass-subpanel flex rounded-full p-1">
+          <section className="glass-panel mx-auto w-full max-w-[31rem] rounded-[2rem] p-6 sm:p-8">
+            <div className="text-center">
+              <div className="flex justify-center pb-4 lg:hidden">
+                <img src={syncupLogo} alt="SyncUp logo" className="h-20 w-auto object-contain" />
+              </div>
+              <p className="stat-label">Welcome back</p>
+              <h2 className="panel-title mt-3 text-2xl font-bold leading-tight sm:text-[1.85rem]">
+                {mode === "login" ? "Sign in to continue" : "Create your account"}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {mode === "login"
+                  ? "Access your projects, deadlines, meetings, and team conversations, all in one place."
+                  : "Join your team workspace and start coordinating in one place."}
+              </p>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-2 rounded-[1.25rem] bg-muted/55 p-1.5">
               {(["login", "register"] as Mode[]).map((item) => (
                 <button
                   key={item}
+                  type="button"
                   onClick={() => setMode(item)}
-                  className={`flex-1 rounded-full px-4 py-3 text-sm font-semibold capitalize transition-all duration-200 ease-glass ${
-                    mode === item
-                      ? "bg-gradient-to-r from-electric to-violet text-white shadow-glow"
-                      : "text-muted hover:text-frost"
-                  }`}
+                  className={`rounded-[1rem] px-4 py-2.5 text-sm font-semibold capitalize ${mode === item ? "glow-button" : "ghost-button"
+                    }`}
                 >
                   {item}
                 </button>
               ))}
             </div>
 
-            <form className="mt-8 space-y-4" onSubmit={submit}>
+            <form className="mt-6 space-y-4" onSubmit={submit}>
               {mode === "register" ? (
-                <div>
-                  <label className="text-sm font-medium text-frost/90">Full name</label>
+                <div className="space-y-2">
+                  <label htmlFor="auth-name" className="block text-sm font-semibold leading-6 text-foreground">
+                    Full name
+                  </label>
                   <input
+                    id="auth-name"
                     value={form.name}
                     onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                    className="soft-input mt-2 w-full rounded-2xl px-4 py-3"
+                    className="soft-input w-full rounded-2xl px-4 py-3 text-sm"
                     placeholder="Khalid Hamad"
+                    autoComplete="name"
                     required
                   />
                 </div>
               ) : null}
 
-              <div>
-                <label className="text-sm font-medium text-frost/90">Email</label>
+              <div className="space-y-2">
+                <label htmlFor="auth-email" className="block text-sm font-semibold leading-6 text-foreground">
+                  Email
+                </label>
                 <input
+                  id="auth-email"
                   type="email"
                   value={form.email}
                   onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-                  className="soft-input mt-2 w-full rounded-2xl px-4 py-3"
+                  className="soft-input w-full rounded-2xl px-4 py-3 text-sm"
                   placeholder="team@university.edu"
+                  autoComplete="email"
                   required
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-frost/90">Password</label>
+              <div className="space-y-2">
+                <label htmlFor="auth-password" className="block text-sm font-semibold leading-6 text-foreground">
+                  Password
+                </label>
                 <input
+                  id="auth-password"
                   type="password"
                   value={form.password}
                   onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                  className="soft-input mt-2 w-full rounded-2xl px-4 py-3"
+                  className="soft-input w-full rounded-2xl px-4 py-3 text-sm"
                   placeholder="At least 8 characters"
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
                   required
                 />
               </div>
 
               {error ? (
-                <p className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+                <p
+                  aria-live="polite"
+                  className="rounded-2xl border border-danger/35 bg-danger/15 px-4 py-3 text-sm font-medium leading-6 text-danger"
+                >
                   {error}
                 </p>
               ) : null}
@@ -145,10 +160,16 @@ export const AuthPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="glow-button w-full rounded-2xl px-4 py-3.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                className="glow-button mt-2 w-full rounded-2xl px-4 py-3 text-sm font-semibold disabled:opacity-70"
               >
                 {loading ? "Working..." : mode === "login" ? "Sign in to SyncUp" : "Create account"}
               </button>
+
+              <p className="text-center text-xs leading-6 text-muted-foreground">
+                {mode === "login"
+                  ? "Use the same email and password you registered with."
+                  : "You can switch to Sign in at any time if you already have an account."}
+              </p>
             </form>
           </section>
         </div>

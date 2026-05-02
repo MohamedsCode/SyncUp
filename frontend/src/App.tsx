@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { apiRequest } from "./api/client";
 import { LoadingState } from "./components/LoadingState";
 import { AppShell } from "./components/layout/AppShell";
+import { WindowTitleBar } from "./components/layout/WindowTitleBar";
 import { DashboardPage } from "./pages/DashboardPage";
 import { AuthPage } from "./pages/AuthPage";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
@@ -142,7 +143,14 @@ const App = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const logout = useAuthStore((state) => state.logout);
   const resetAppStore = useAppStore((state) => state.reset);
+  const themeMode = useAppStore((state) => state.themeMode);
   const [checkingSession, setCheckingSession] = useState(Boolean(token));
+  const hasWindowControls = Boolean((window.syncupDesktop ?? window.syncuDesktop)?.windowControls);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", themeMode === "dark");
+    document.body.classList.toggle("dark", themeMode === "dark");
+  }, [themeMode]);
 
   useEffect(() => {
     let active = true;
@@ -178,33 +186,39 @@ const App = () => {
 
   if (checkingSession) {
     return (
-      <div className="min-h-screen p-6">
-        <LoadingState label="Restoring your session..." />
+      <div className={hasWindowControls ? "app-viewport desktop-window-root" : "app-viewport"}>
+        <WindowTitleBar />
+        <div className="min-h-screen p-6">
+          <LoadingState label="Restoring your session..." />
+        </div>
       </div>
     );
   }
 
   return (
-    <Routes>
-      <Route path="/auth" element={token ? <Navigate to="/" replace /> : <AuthPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<DashboardPage />} />
-        <Route path="tasks" element={<TasksPage />} />
-        <Route path="files" element={<FileSharingPage />} />
-        <Route path="chat" element={<ChatPage />} />
-        <Route path="meetings" element={<MeetingsPage />} />
-        <Route path="scheduler" element={<SchedulerPage />} />
-        <Route path="availability" element={<AvailabilityPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to={token ? "/" : "/auth"} replace />} />
-    </Routes>
+    <div className={hasWindowControls ? "app-viewport desktop-window-root" : "app-viewport"}>
+      <WindowTitleBar />
+      <Routes>
+        <Route path="/auth" element={token ? <Navigate to="/" replace /> : <AuthPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardPage />} />
+          <Route path="tasks" element={<TasksPage />} />
+          <Route path="files" element={<FileSharingPage />} />
+          <Route path="chat" element={<ChatPage />} />
+          <Route path="meetings" element={<MeetingsPage />} />
+          <Route path="scheduler" element={<SchedulerPage />} />
+          <Route path="availability" element={<AvailabilityPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to={token ? "/" : "/auth"} replace />} />
+      </Routes>
+    </div>
   );
 };
 
