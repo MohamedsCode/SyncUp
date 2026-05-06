@@ -427,6 +427,26 @@
     backdrop-filter: blur(18px) saturate(1.12);
   }
 
+  .chat-bubble-own {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--primary) 32%, #ffffff);
+    background:
+      linear-gradient(145deg, color-mix(in srgb, #ffffff 34%, transparent), transparent 42%),
+      color-mix(in srgb, var(--primary) 18%, var(--card));
+    box-shadow:
+      0 12px 24px color-mix(in srgb, var(--primary) 18%, transparent),
+      0 3px 8px color-mix(in srgb, #7b7191 12%, transparent),
+      inset 0 1px 0 color-mix(in srgb, #ffffff 76%, transparent);
+  }
+
+  .chat-bubble-own:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 16px 28px color-mix(in srgb, var(--primary) 20%, transparent),
+      0 4px 10px color-mix(in srgb, #7b7191 14%, transparent),
+      inset 0 1px 0 color-mix(in srgb, #ffffff 78%, transparent);
+  }
+
   .sticky-glass {
     border: 1px solid color-mix(in srgb, #ffffff 56%, var(--border));
     background: color-mix(in srgb, var(--card) 68%, transparent);

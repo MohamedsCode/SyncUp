@@ -151,7 +151,7 @@ export const ChatPage = () => {
               onDoubleClick={() => void toggleReaction(message)}
                 className={`max-w-[70%] rounded-[24px] px-4 py-3 ${
                   message.own
-                  ? "border border-primary/25 bg-primary/12 text-foreground"
+                  ? "chat-bubble-own text-foreground"
                   : "glass-subpanel text-foreground"
               } ${reactingMessageId === message.id ? "opacity-80" : ""}`}
               title="Double-click to react with thumbs up"
