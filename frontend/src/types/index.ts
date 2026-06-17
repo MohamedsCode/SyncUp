@@ -9,6 +9,7 @@ export interface ProjectSummary {
   id: number;
   name: string;
   code: string;
+  description?: string;
   deadline?: string | null;
   memberCount: number;
   completionRate: number;
@@ -94,6 +95,8 @@ export interface DashboardData {
     id: number;
     name: string;
     code: string;
+    description?: string;
+    deadline?: string | null;
   };
   stats: {
     totalTasks: number;

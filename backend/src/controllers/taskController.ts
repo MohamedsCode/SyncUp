@@ -2,6 +2,7 @@ import { NotificationType, TaskPriority, TaskStatus } from "@prisma/client";
 import { Response } from "express";
 import { z } from "zod";
 import { prisma } from "../config/prisma";
+import { derivProjectTasks, isDerivProjectId } from "../data/derivProject";
 import { AuthenticatedRequest } from "../middleware/auth";
 import { createNotifications, syncDeadlineNotifications } from "../services/notificationService";
 import { HttpError } from "../utils/http";
@@ -61,6 +62,12 @@ const serializeTask = <T extends { assignments: Array<{ user: { id: number; name
 
 export const listTasks = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
+
+  if (isDerivProjectId(projectId)) {
+    res.json({ tasks: derivProjectTasks });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
   await syncDeadlineNotifications(projectId);
 

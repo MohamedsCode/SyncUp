@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { z } from "zod";
 import { prisma } from "../config/prisma";
+import { derivProjectMembers, derivProjectSummary, getDerivDashboard, isDerivProjectId } from "../data/derivProject";
 import { AuthenticatedRequest } from "../middleware/auth";
 import { syncDeadlineNotifications } from "../services/notificationService";
 import { HttpError } from "../utils/http";
@@ -63,18 +64,21 @@ export const listProjects = async (req: AuthenticatedRequest, res: Response) => 
   });
 
   res.json({
-    projects: projects.map((project) => ({
-      id: project.id,
-      name: project.name,
-      code: project.code,
-      deadline: project.deadline,
-      memberCount: project.members.length,
-      completionRate: project.tasks.length
-        ? Math.round((project.tasks.filter((task) => task.status === "done").length / project.tasks.length) * 100)
-        : 0,
-      nextMeeting: project.meetings[0] ?? null,
-      members: project.members.map((member) => member.user)
-    }))
+    projects: [
+      derivProjectSummary,
+      ...projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        code: project.code,
+        deadline: project.deadline,
+        memberCount: project.members.length,
+        completionRate: project.tasks.length
+          ? Math.round((project.tasks.filter((task) => task.status === "done").length / project.tasks.length) * 100)
+          : 0,
+        nextMeeting: project.meetings[0] ?? null,
+        members: project.members.map((member) => member.user)
+      }))
+    ]
   });
 };
 
@@ -131,6 +135,12 @@ export const joinProject = async (req: AuthenticatedRequest, res: Response) => {
 
 export const getProjectMembers = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
+
+  if (isDerivProjectId(projectId)) {
+    res.json({ members: derivProjectMembers });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const members = await prisma.projectMember.findMany({
@@ -160,6 +170,12 @@ export const getProjectMembers = async (req: AuthenticatedRequest, res: Response
 export const updateProject = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
   const payload = updateProjectSchema.parse(req.body);
+
+  if (isDerivProjectId(projectId)) {
+    res.json({ project: derivProjectSummary, ignored: payload });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const project = await prisma.project.update({
@@ -174,6 +190,12 @@ export const updateProject = async (req: AuthenticatedRequest, res: Response) =>
 
 export const getDashboard = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
+
+  if (isDerivProjectId(projectId)) {
+    res.json(getDerivDashboard());
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
   await syncDeadlineNotifications(projectId);
 

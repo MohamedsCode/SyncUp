@@ -83,6 +83,11 @@ export const DashboardPage = () => {
             <h1 className="panel-title text-balance text-4xl font-bold tracking-tight md:text-[2.8rem]">
               {dashboard.project.name}
             </h1>
+            {dashboard.project.description ? (
+              <p className="mt-4 max-w-2xl text-base leading-7 text-foreground">
+                {dashboard.project.description}
+              </p>
+            ) : null}
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
               Team code <span className="font-mono text-foreground">{dashboard.project.code}</span> with{" "}
               {dashboard.stats.memberCount} members.
