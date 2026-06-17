@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { env } from "./config/env";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
+import { embeddedRouter } from "./routes/embeddedRouter";
 import { router } from "./routes";
 
 export const createApp = () => {
@@ -14,7 +15,7 @@ export const createApp = () => {
     })
   );
   app.use(express.json({ limit: "5mb" }));
-  app.use("/api", router);
+  app.use("/api", env.SYNCUP_EMBEDDED_DATA === "1" ? embeddedRouter : router);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

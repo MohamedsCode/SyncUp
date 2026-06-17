@@ -14,7 +14,9 @@ export const startServer = async () => {
   const app = createApp();
   server = http.createServer(app);
 
-  await seedDerivProject();
+  if (env.SYNCUP_EMBEDDED_DATA !== "1") {
+    await seedDerivProject();
+  }
 
   await new Promise<void>((resolve) => {
     server!.listen(env.PORT, () => resolve());
@@ -39,14 +41,18 @@ export const stopServer = async () => {
     });
   });
 
-  await prisma.$disconnect();
+  if (env.SYNCUP_EMBEDDED_DATA !== "1") {
+    await prisma.$disconnect();
+  }
   server = null;
 };
 
 if (require.main === module) {
   startServer().catch(async (error) => {
     console.error("Failed to start server", error);
-    await prisma.$disconnect();
+    if (env.SYNCUP_EMBEDDED_DATA !== "1") {
+      await prisma.$disconnect();
+    }
     process.exit(1);
   });
 }

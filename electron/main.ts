@@ -1,9 +1,20 @@
 import path from "path";
 import net from "net";
+import fs from "fs";
+import os from "os";
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 
 let mainWindow: BrowserWindow | null = null;
 let stopBackendServer: (() => Promise<void>) | null = null;
+
+const startupLogPath = path.join(os.tmpdir(), "syncup-startup.log");
+const logStartup = (message: string) => {
+  if (!app.isPackaged) {
+    return;
+  }
+
+  fs.appendFileSync(startupLogPath, `[${new Date().toISOString()}] ${message}\n`);
+};
 
 const canListenOnPort = (port: number) =>
   new Promise<boolean>((resolve) => {
@@ -42,6 +53,7 @@ const findAvailablePort = async (preferredPort: number) => {
 };
 
 const createMainWindow = async () => {
+  logStartup("createMainWindow:start");
   const preloadPath = app.isPackaged
     ? path.join(__dirname, "preload.js")
     : path.join(__dirname, "preload.dev.cjs");
@@ -49,6 +61,8 @@ const createMainWindow = async () => {
     const apiPort = await findAvailablePort(Number(process.env.PORT ?? "4000"));
     process.env.PORT = String(apiPort);
     process.env.SYNCUP_API_URL = `http://localhost:${apiPort}`;
+    process.env.SYNCUP_EMBEDDED_DATA = "1";
+    process.env.JWT_SECRET = process.env.JWT_SECRET ?? "syncup-packaged-demo-secret";
   } else {
     process.env.SYNCUP_API_URL = process.env.SYNCUP_API_URL ?? `http://localhost:${process.env.PORT ?? "4000"}`;
   }
@@ -93,7 +107,9 @@ const createMainWindow = async () => {
     }
 
     const appPath = app.getAppPath();
+    logStartup(`appPath:${appPath}`);
     const backendEntry = path.join(appPath, "backend", "dist", "server.js");
+    logStartup(`backendEntry:${backendEntry}`);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const backendModule = require(backendEntry) as {
       startServer: () => Promise<unknown>;
@@ -101,11 +117,14 @@ const createMainWindow = async () => {
     };
 
     await backendModule.startServer();
+    logStartup("backend:startServer:ok");
     stopBackendServer = backendModule.stopServer;
 
     await mainWindow.loadFile(path.join(appPath, "frontend", "dist", "index.html"));
+    logStartup("frontend:loadFile:ok");
   } catch (error) {
     const message = error instanceof Error ? `${error.message}\n\n${error.stack ?? ""}` : String(error);
+    logStartup(`error:${message}`);
     console.error("SyncUp desktop startup failed:", error);
     dialog.showErrorBox("SyncUp failed to start", message);
     await mainWindow.loadURL(

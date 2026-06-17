@@ -21,9 +21,18 @@ for (const envPath of envCandidates) {
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(4000),
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  SYNCUP_EMBEDDED_DATA: z.string().optional(),
+  DATABASE_URL: z.string().optional(),
   JWT_SECRET: z.string().min(8, "JWT_SECRET must be at least 8 characters"),
   FRONTEND_URL: z.string().default("http://localhost:5173")
+}).superRefine((value, context) => {
+  if (value.SYNCUP_EMBEDDED_DATA !== "1" && !value.DATABASE_URL) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "DATABASE_URL is required",
+      path: ["DATABASE_URL"]
+    });
+  }
 });
 
 export const env = envSchema.parse(process.env);
