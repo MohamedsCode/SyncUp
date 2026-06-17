@@ -2,7 +2,7 @@ import { NotificationType, TaskPriority, TaskStatus } from "@prisma/client";
 import { Response } from "express";
 import { z } from "zod";
 import { prisma } from "../config/prisma";
-import { derivProjectTasks, isDerivProjectId } from "../data/derivProject";
+import { derivProjectMembers, derivProjectTasks, isDerivProjectId } from "../data/derivProject";
 import { AuthenticatedRequest } from "../middleware/auth";
 import { createNotifications, syncDeadlineNotifications } from "../services/notificationService";
 import { HttpError } from "../utils/http";
@@ -92,6 +92,26 @@ export const listTasks = async (req: AuthenticatedRequest, res: Response) => {
 export const createTask = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
   const payload = createTaskSchema.parse(req.body);
+
+  if (isDerivProjectId(projectId)) {
+    res.status(201).json({
+      task: {
+        id: Date.now(),
+        projectId,
+        title: payload.title,
+        description: payload.description,
+        deadline: new Date(payload.deadline),
+        status: "todo",
+        priority: payload.priority,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        assignees: derivProjectMembers.filter((member) => payload.assigneeIds.includes(member.id)),
+        commentsCount: 0
+      }
+    });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const projectMembers = await prisma.projectMember.findMany({
@@ -136,6 +156,30 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
   const taskId = z.coerce.number().parse(req.params.taskId);
   const payload = updateTaskSchema.parse(req.body);
+
+  if (isDerivProjectId(projectId)) {
+    const task = derivProjectTasks.find((item) => item.id === taskId);
+    if (!task) {
+      throw new HttpError(404, "Task not found.");
+    }
+
+    res.json({
+      task: {
+        ...task,
+        title: payload.title ?? task.title,
+        description: payload.description ?? task.description,
+        deadline: payload.deadline ? new Date(payload.deadline) : task.deadline,
+        priority: payload.priority ?? task.priority,
+        status: payload.status ?? task.status,
+        assignees: payload.assigneeIds
+          ? derivProjectMembers.filter((member) => payload.assigneeIds?.includes(member.id))
+          : task.assignees,
+        updatedAt: new Date()
+      }
+    });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const existingTask = await prisma.task.findFirst({
@@ -209,6 +253,15 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
 export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
   const taskId = z.coerce.number().parse(req.params.taskId);
+
+  if (isDerivProjectId(projectId)) {
+    res.json({
+      success: true,
+      deletedTaskId: taskId
+    });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const existingTask = await prisma.task.findFirst({
@@ -237,6 +290,29 @@ export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
 export const listTaskComments = async (req: AuthenticatedRequest, res: Response) => {
   const { projectId } = projectIdSchema.parse(req.params);
   const taskId = z.coerce.number().parse(req.params.taskId);
+
+  if (isDerivProjectId(projectId)) {
+    const task = derivProjectTasks.find((item) => item.id === taskId);
+    if (!task) {
+      throw new HttpError(404, "Task not found.");
+    }
+
+    res.json({
+      comments: [
+        {
+          id: taskId * 10,
+          taskId,
+          userId: task.assignees[0]?.id ?? derivProjectMembers[0].id,
+          content: "This Deriv project task is part of the built-in project plan.",
+          createdAt: task.updatedAt,
+          updatedAt: task.updatedAt,
+          user: task.assignees[0] ?? derivProjectMembers[0]
+        }
+      ]
+    });
+    return;
+  }
+
   await assertProjectMember(projectId, req.auth!.userId);
 
   const task = await prisma.task.findFirst({
@@ -275,6 +351,27 @@ export const createTaskComment = async (req: AuthenticatedRequest, res: Response
   const taskId = z.coerce.number().parse(req.params.taskId);
   const payload = createTaskCommentSchema.parse(req.body);
   const userId = req.auth!.userId;
+
+  if (isDerivProjectId(projectId)) {
+    const task = derivProjectTasks.find((item) => item.id === taskId);
+    if (!task) {
+      throw new HttpError(404, "Task not found.");
+    }
+
+    res.status(201).json({
+      comment: {
+        id: Date.now(),
+        taskId,
+        userId,
+        content: payload.content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        user: derivProjectMembers[0]
+      }
+    });
+    return;
+  }
+
   await assertProjectMember(projectId, userId);
 
   const task = await prisma.task.findFirst({
