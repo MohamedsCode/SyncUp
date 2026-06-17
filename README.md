@@ -2,6 +2,32 @@
 
 SyncUp is a desktop application for student team coordination. It combines project management, multi-user task assignment, a weekly availability planner, urgency-aware meeting recommendations, project chat, file sharing, and notifications inside an Electron desktop shell.
 
+## Screenshots
+
+### Authentication
+
+![SyncUp authentication screen](docs/screenshots/auth.png)
+
+### Dashboard
+
+![SyncUp dashboard overview](docs/screenshots/dashboard.png)
+
+### Task Board
+
+![SyncUp task board with assignments and deadlines](docs/screenshots/tasks.png)
+
+### Project Chat
+
+![SyncUp project chat with mentions and reactions](docs/screenshots/chat.png)
+
+### File Sharing
+
+![SyncUp shared files view](docs/screenshots/files.png)
+
+### Urgency-Aware Scheduler
+
+![SyncUp scheduler recommendations](docs/screenshots/scheduler.png)
+
 ## Stack
 
 - Electron desktop shell
