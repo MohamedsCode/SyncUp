@@ -2,6 +2,7 @@ import http from "http";
 import { env } from "./config/env";
 import { createApp } from "./app";
 import { prisma } from "./config/prisma";
+import { seedDerivProject } from "./services/derivSeedService";
 
 let server: http.Server | null = null;
 
@@ -12,6 +13,8 @@ export const startServer = async () => {
 
   const app = createApp();
   server = http.createServer(app);
+
+  await seedDerivProject();
 
   await new Promise<void>((resolve) => {
     server!.listen(env.PORT, () => resolve());
