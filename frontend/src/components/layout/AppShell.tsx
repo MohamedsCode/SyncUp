@@ -343,18 +343,7 @@ export const AppShell = ({
           <header className="glass-panel mb-5 rounded-[2rem] px-5 py-4 md:px-6 md:py-5">
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="page-kicker">Current Workspace</span>
-                  {selectedProject?.code ? (
-                    <span className="status-pill status-pill-primary font-mono text-[0.68rem] tracking-[0.22em]">
-                      {selectedProject.code}
-                    </span>
-                  ) : null}
-                  <span className="status-pill status-pill-accent">{projects.length} projects</span>
-                  <span className="status-pill status-pill-primary">{unreadCount} unread</span>
-                </div>
-
-                <h1 className="panel-title mt-4 text-3xl font-bold text-balance md:text-[2.35rem]">
+                <h1 className="panel-title text-3xl font-bold text-balance md:text-[2.35rem]">
                   {selectedProject?.name ?? "Choose a workspace to begin"}
                 </h1>
 

@@ -80,8 +80,7 @@ export const DashboardPage = () => {
       <section className="glass-panel overflow-hidden rounded-[2rem] p-6 md:p-8">
         <div className="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
-            <span className="page-kicker">Project Overview</span>
-            <h1 className="panel-title mt-5 text-balance text-4xl font-bold tracking-tight md:text-[2.8rem]">
+            <h1 className="panel-title text-balance text-4xl font-bold tracking-tight md:text-[2.8rem]">
               {dashboard.project.name}
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
